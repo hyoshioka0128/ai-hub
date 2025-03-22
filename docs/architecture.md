@@ -47,11 +47,11 @@ The design of the Enterprise Azure OpenAI Hub is in strict alignment with Azure'
 
 The architecture of the Enterprise Azure OpenAI Hub is divided into several key areas, each of which is designed to address specific aspects of the platform's functionality and security.
 
-![Azure Open AI workload composition in a compliant corp connected landing zone](./architecturecontext.png)
+![Azure OpenAI workload composition in a compliant corp connected landing zone](./architecturecontext.png)
 
 The diagram above shows an example where the Enterprise Azure OpenAI Hub is being deployed to a compliant, corp connected landing zone, where all services are connected via private endpoint to the virtual network. The virtual network is connected to the hub virtual network via VNet peering, and the hub virtual network is connected to on-premises network via ExpressRoute.
 
-In the most simplistic form, users - assuming Azure RBAC has been granted to the Azure OpenAI instance, and model deployment has completed, can interact with the Azure OpenAI API over the private endpoint, and the Azure Open AI instance will respond with the generated text. If any data must be provided, the storage account is encrypted using customer-managed keys, and the keys are stored in a Key Vault, which is also deployed with a private endpoint. The Key Vault is also used to store the customer-managed keys for the Azure OpenAI instance, and other Azure services that require encryption keys with customer-managed keys.
+In the most simplistic form, users - assuming Azure RBAC has been granted to the Azure OpenAI instance, and model deployment has completed, can interact with the Azure OpenAI API over the private endpoint, and the Azure OpenAI instance will respond with the generated text. If any data must be provided, the storage account is encrypted using customer-managed keys, and the keys are stored in a Key Vault, which is also deployed with a private endpoint. The Key Vault is also used to store the customer-managed keys for the Azure OpenAI instance, and other Azure services that require encryption keys with customer-managed keys.
 
 ## Design areas
 
@@ -77,14 +77,14 @@ The following sections provide an overview of the design considerations and the 
         * eastus, southcentralus, westeurope, francecentral: 40k
         * northcentralus, australiaeast, eastus2, canadaeast, japaneast, uksouth, swedencentral, switzerlandnorth: 80k
 
-* A single Azure Open AI instance may be suitable for a small PoC by independent application teams.
+* A single Azure OpenAI instance may be suitable for a small PoC by independent application teams.
 * If a model in an Azure OpenAI instance is shared by multiple teams, it is a "first come - first served" behavior, and the application must cater for retry logic and error handling.
 * Quota is shared between all instances and models in the same region and subscription.
 
 #### Design recommendations
 
 * If a model in an Azure OpenAI instance is shared by multiple teams, and the model is being used by multiple applications, it is recommended to deploy a dedicated Azure OpenAI instance per application if separation of duties and resource governance is required. This will provide separation at instance level, and the application layer is responsible for retry logic, and error handling as needed.
-* To scale out Azure Open AI with multiple instances, in the same region, you must create additional subscriptions to get additional quota and capacity as it bound the region within the subscription.
+* To scale out Azure OpenAI with multiple instances, in the same region, you must create additional subscriptions to get additional quota and capacity as it bound the region within the subscription.
 * If you have a multi-region subscription setup, you do not have to create additional subscriptions, as the quota is per region per subscription.
 * If you have a dedicated team that provides Azure OpenAI and auxilliary services to the application teams, you can deploy a single or multiple Azure OpenAI instances, and manage the quota and capacity centrally, and provide the application teams with the necessary access to the Azure OpenAI instance through Azure API management to provide granular access at the API/operation layer and have centralized governance, logging, access management, and more.
 * The regional quota is soft limit, and can be increased by contacting Microsoft support.
@@ -111,7 +111,7 @@ The following sections provide an overview of the design considerations and the 
 
 * Use customer-managed keys to encrypt the data, and store the keys in a Key Vault. This will ensure that the data is encrypted at rest, and the keys are stored in a secure location, and can be rotated as needed.
 * Use centralized RBAC (Azure AD) for the Key Vault to ensure that the access to the Key Vault is centrally managed and controlled.
-* Use Azure Policy to ensure that the Azure Open AI instance(s) are deployed with the right configuration, and that the configuration is maintained over time. For example, it is recommended to deploy Azure Open AI using a private endpoint, and not expose the service over the public internet.
+* Use Azure Policy to ensure that the Azure OpenAI instance(s) are deployed with the right configuration, and that the configuration is maintained over time. For example, it is recommended to deploy Azure OpenAI using a private endpoint, and not expose the service over the public internet.
 
 ### Identity and Access Management
 
@@ -125,7 +125,7 @@ The following sections provide an overview of the design considerations and the 
 
 #### Design recommendations
 
-* Empower the application to use dedicated, application-centric Log Analytics Workspace(s) for the Azure Open AI instance(s) and requisite components such as Key Vault, Storage Accounts, NSGs etc., to ensure that the logs are stored in a secure location, and can be accessed by the application team as needed, and where they can build out their own observability using dashboards, workbooks, and alerts.
+* Empower the application to use dedicated, application-centric Log Analytics Workspace(s) for the Azure OpenAI instance(s) and requisite components such as Key Vault, Storage Accounts, NSGs etc., to ensure that the logs are stored in a secure location, and can be accessed by the application team as needed, and where they can build out their own observability using dashboards, workbooks, and alerts.
 
 ## Conclusion
 This article has provided recommendations for deploying an AI scenario (such as RAG) in a secure and compliant manner across different design areas (for example, ensuring no access to Azure services via keys, or ensuring no public network access is configured in any of the services). While this task can be achieved manually, we have simplified this task within the Enterprise Azure AI Hub, as for every service or configuration, the Enterprise Azure OpenAI Hub portal experience **recommends** the most secure way to deploy it and be ready for production environments, but at the same time it gives you the opportunity to deploy with a simplified configuration while you are learning and doing proof of concepts.
